@@ -1,11 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recents_content/features/auth/logic/validators.dart';
+import 'package:recents_content/features/auth/logic/auth_validators.dart';
 import 'package:recents_content/features/auth/presentation/pages/sign_in_screen.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_background.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:recents_content/features/auth/presentation/widgets/message_background.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SignUpScreen extends StatefulWidget {
