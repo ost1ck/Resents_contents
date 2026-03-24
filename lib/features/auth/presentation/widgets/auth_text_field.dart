@@ -46,6 +46,7 @@ class AuthTextField extends StatelessWidget {
         ),
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.white),
+        helperText: ' ',
         suffixIcon: Icon(icon,
           color: Colors.white,
         )

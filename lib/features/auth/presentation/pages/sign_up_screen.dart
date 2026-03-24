@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recents_content/features/auth/data/auth_service.dart';
 import 'package:recents_content/features/auth/domain/validators/auth_validators.dart';
@@ -20,7 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _emailController;
-  late final TextEditingController _passowordController;
+  late final TextEditingController _passwordController;
 
   final _authService = AuthService();
 
@@ -28,13 +27,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState(){
     super.initState();
     _emailController = TextEditingController();
-    _passowordController = TextEditingController();
+    _passwordController = TextEditingController();
   }
 
   @override
   void dispose(){
     _emailController.dispose();
-    _passowordController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -44,8 +43,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: AuthBackground(
         child: Form(
           key: _formKey,
+        child: Padding(
+          padding: const EdgeInsetsGeometry.only(top: 275),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // SizedBox(height: 200),
             Text('Sign Up',
@@ -62,7 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
 
-            SizedBox(height: 40),
+            SizedBox(height: 26),
 
             AuthTextField(
               controller: _emailController,
@@ -76,7 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 26),
 
             AuthTextField(
-                controller: _passowordController,
+                controller: _passwordController,
                 hintText: "Enter password",
                 icon: Icons.password,
                 isPassword: true,
@@ -84,47 +84,45 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: Validators.passwordValidator,
             ),
 
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 100),
               child: ElevatedButton(
                   onPressed: () async{
                     if(_formKey.currentState!.validate()) {
-
-                      try{
-                        await _authService.signUp(
+                        final error = await _authService.signUp(
                             email: _emailController.text.trim(),
-                            password: _passowordController.text.trim()
+                            password: _passwordController.text.trim()
                         );
 
-                        if(context.mounted) {
+                        if(!context.mounted) return;
+                        if(error != null){
 
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(error),
+                            ),
+                          );
+                          return;
+                          }
                           showTopSnackBar(
                               Overlay.of(context),
                               const MessageBackground(
-                                  message: "Success registration!",
-                                  gradientColors: [
-                                    Color(0xFF093028),
-                                    Color(0xFF237a57),
-                                  ],
+                                message: "Success registration!",
+                                gradientColors: [
+                                  Color(0xFF093028),
+                                  Color(0xFF237a57),
+                                ],
                               )
                           );
 
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => SignInScreen())
+                                  builder: (context) => const SignInScreen())
                           );
                         }
-                      }on FirebaseAuthException catch (e){
-                        print("Error Firebase: ${e.code}");
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message ?? "Error regestration"))
-                        );
-                      }
-                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -145,6 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               )
             ),
           ],
+        )
         )
         )
       ),

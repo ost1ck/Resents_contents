@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:recents_content/features/auth/data/auth_service.dart';
 import 'package:recents_content/features/auth/domain/validators/auth_validators.dart';
@@ -46,8 +45,10 @@ class _SignInScreenState extends State<SignInScreen> {
       body: AuthBackground(
         child: Form(
           key: _formKey,
+          child: Padding(
+              padding: const EdgeInsetsGeometry.only(top: 275),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Sign In',
                 style: TextStyle(
@@ -74,7 +75,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   validator: Validators.emailValidator,
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 26),
 
               AuthTextField(
                   controller: _passwordController,
@@ -85,49 +86,45 @@ class _SignInScreenState extends State<SignInScreen> {
                   validator: Validators.passwordValidator,
               ),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 100),
                 child: ElevatedButton(
                     onPressed: () async {
-                      try{
                         if(_formKey.currentState!.validate()) {
-                          await _authService.signIn(
+                          final error = await _authService.signIn(
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim()
                           );
 
-                          if (context.mounted) {
-                            showTopSnackBar(
-                                Overlay.of(context),
-                                const MessageBackground(
-                                    message: "Success autorization!",
-                                    gradientColors: [
-                                      Color(0xFF093028),
-                                      Color(0xFF237a57),
-                                    ]
-                                )
-                            );
+                          if (!context.mounted) return;
 
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const HomeScreen())
+                          if(error != null){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(error),
+                              ),
                             );
+                            return;
                           }
-                        }
-                      }
-                      on FirebaseAuthException catch (error){
-                        print('Error Firebase: ${error.code}');
+                          showTopSnackBar(
+                              Overlay.of(context),
+                              const MessageBackground(
+                                  message: "Success authorization",
+                                  gradientColors: [
+                                    Color(0xFF093028),
+                                    Color(0xFF237a57),
+                                  ]
+                              )
+                          );
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(error.message ?? 'Error autorization!')
-                          )
-                        );
-                      }
-                    },
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const HomeScreen())
+                          );
+                        }
+                      },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
@@ -147,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               GestureDetector(
                 onTap: (){
@@ -165,6 +162,7 @@ class _SignInScreenState extends State<SignInScreen> {
               )
             ],
           )
+      )
       ),
       )
     );
