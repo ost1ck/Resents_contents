@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recents_content/features/auth/logic/auth_validators.dart';
+import 'package:recents_content/features/auth/data/auth_service.dart';
+import 'package:recents_content/features/auth/domain/validators/auth_validators.dart';
 import 'package:recents_content/features/auth/presentation/pages/sign_in_screen.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_background.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_text_field.dart';
@@ -20,6 +21,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   late final TextEditingController _emailController;
   late final TextEditingController _passowordController;
+
+  final _authService = AuthService();
 
   @override
   void initState(){
@@ -90,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if(_formKey.currentState!.validate()) {
 
                       try{
-                        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        await _authService.signUp(
                             email: _emailController.text.trim(),
                             password: _passowordController.text.trim()
                         );
@@ -107,31 +110,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ],
                               )
                           );
-
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //     SnackBar(content: Text("Success registration!",
-                          //       style: TextStyle(
-                          //         color: Colors.white,
-                          //         fontSize: 16,
-                          //         fontWeight: FontWeight.bold,
-                          //       ),
-                          //       textAlign: TextAlign.center,
-                          //     ),
-                          //       backgroundColor: Colors.green,
-                          //       behavior: SnackBarBehavior.floating, // в формі повідомлення
-                          //       // elevation: 10, // тінь
-                          //
-                          //       margin: EdgeInsets.only(
-                          //         bottom: MediaQuery.of(context).size.height - 150,
-                          //         left: 20,
-                          //         right: 20
-                          //       ),
-                          //
-                          //       shape: RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.circular(26)
-                          //       ),
-                          //     )
-                          // );
 
                           Navigator.push(
                               context,

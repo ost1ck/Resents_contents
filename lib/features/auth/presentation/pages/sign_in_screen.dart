@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:recents_content/features/auth/logic/auth_validators.dart';
+import 'package:recents_content/features/auth/data/auth_service.dart';
+import 'package:recents_content/features/auth/domain/validators/auth_validators.dart';
 import 'package:recents_content/features/auth/presentation/pages/sign_up_screen.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_background.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_text_field.dart';
@@ -21,6 +22,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
+  
+  final _authService = AuthService();
 
   @override
   void initState(){
@@ -90,10 +93,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     onPressed: () async {
                       try{
                         if(_formKey.currentState!.validate()) {
-                          await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                              email: _emailController.text.trim(),
-                              password: _passwordController.text.trim()
+                          await _authService.signIn(
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text.trim()
                           );
 
                           if (context.mounted) {
