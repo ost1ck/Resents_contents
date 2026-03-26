@@ -23,6 +23,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final _authService = AuthService();
 
+  bool _isLoading = false;
+
   @override
   void initState(){
     super.initState();
@@ -44,7 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         child: Form(
           key: _formKey,
         child: Padding(
-          padding: const EdgeInsetsGeometry.only(top: 275),
+          padding: const EdgeInsets.only(top: 275),
         child: Column(
           children: [
             // SizedBox(height: 200),
@@ -89,40 +91,52 @@ class _SignUpScreenState extends State<SignUpScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 100),
               child: ElevatedButton(
-                  onPressed: () async{
+                  onPressed: _isLoading ? null : () async{
                     if(_formKey.currentState!.validate()) {
+                      setState(() {
+                        _isLoading = true;
+                      });
+
+                      try {
                         final error = await _authService.signUp(
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim()
                         );
 
-                        if(!context.mounted) return;
-                        if(error != null){
+                        if (!context.mounted) return;
 
+                        if (error != null) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content: Text(error),
+                              content: Text(error),
                             ),
                           );
                           return;
-                          }
-                          showTopSnackBar(
-                              Overlay.of(context),
-                              const MessageBackground(
-                                message: "Success registration!",
-                                gradientColors: [
-                                  Color(0xFF093028),
-                                  Color(0xFF237a57),
-                                ],
-                              )
-                          );
-
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignInScreen())
-                          );
                         }
+                        showTopSnackBar(
+                            Overlay.of(context),
+                            const MessageBackground(
+                              message: "Success registration!",
+                              gradientColors: [
+                                Color(0xFF093028),
+                                Color(0xFF237a57),
+                              ],
+                            )
+                        );
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignInScreen())
+                        );
+                      }finally{
+                        if(mounted){
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -134,7 +148,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(26))
                     )
                   ),
-                  child: const Text(
+                  child: _isLoading ?
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.green,
+                          strokeWidth: 2,
+                        ),
+                      )
+                  : const Text(
                     'Sign up ',
                     style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w400

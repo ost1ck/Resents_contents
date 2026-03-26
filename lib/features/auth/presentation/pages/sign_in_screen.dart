@@ -24,6 +24,9 @@ class _SignInScreenState extends State<SignInScreen> {
   
   final _authService = AuthService();
 
+  //перевірка авторизації
+  bool _isLoading = false;
+
   @override
   void initState(){
     super.initState();
@@ -46,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Form(
           key: _formKey,
           child: Padding(
-              padding: const EdgeInsetsGeometry.only(top: 275),
+              padding: const EdgeInsets.only(top: 275),
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -91,38 +94,51 @@ class _SignInScreenState extends State<SignInScreen> {
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 100),
                 child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: _isLoading ? null : () async {
                         if(_formKey.currentState!.validate()) {
-                          final error = await _authService.signIn(
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text.trim()
-                          );
+                          setState(() {
+                            _isLoading = true;
+                          });
 
-                          if (!context.mounted) return;
-
-                          if(error != null){
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(error),
-                              ),
+                          try {
+                            final error = await _authService.signIn(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim()
                             );
-                            return;
-                          }
-                          showTopSnackBar(
-                              Overlay.of(context),
-                              const MessageBackground(
-                                  message: "Success authorization",
-                                  gradientColors: [
-                                    Color(0xFF093028),
-                                    Color(0xFF237a57),
-                                  ]
-                              )
-                          );
 
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const HomeScreen())
-                          );
+                            if (!context.mounted) return;
+
+                            if (error != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(error),
+                                ),
+                              );
+                              return;
+                            }
+                            showTopSnackBar(
+                                Overlay.of(context),
+                                const MessageBackground(
+                                    message: "Success authorization",
+                                    gradientColors: [
+                                      Color(0xFF093028),
+                                      Color(0xFF237a57),
+                                    ]
+                                )
+                            );
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomeScreen())
+                            );
+                          }finally{
+                            if(mounted){
+                              setState(() {
+                                _isLoading = false;
+                              });
+                            }
+                          }
                         }
                       },
                   style: ElevatedButton.styleFrom(
@@ -135,7 +151,16 @@ class _SignInScreenState extends State<SignInScreen> {
                       borderRadius: BorderRadius.circular(26),
                     )
                   ),
-                  child: Text('Sign in',
+                  child: _isLoading
+                  ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.green,
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : const Text('Sign in',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600
@@ -153,7 +178,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       MaterialPageRoute(builder: (context) => SignUpScreen())
                   );
                 },
-                child: Text('Don\'t have account',
+                child: const Text('Don\'t have account',
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14
