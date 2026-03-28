@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:recents_content/features/auth/presentation/pages/sign_in_screen.dart';
-import 'package:recents_content/features/auth/presentation/pages/sign_up_screen.dart';
+import 'package:recents_content/features/auth/presentation/screens/sign_in_screen.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 

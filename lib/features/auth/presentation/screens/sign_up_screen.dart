@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:recents_content/features/auth/data/auth_service.dart';
 import 'package:recents_content/features/auth/domain/validators/auth_validators.dart';
-import 'package:recents_content/features/auth/presentation/pages/sign_in_screen.dart';
+import 'package:recents_content/features/auth/presentation/screens/sign_in_screen.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_background.dart';
+import 'package:recents_content/features/auth/presentation/widgets/auth_form_field.dart';
 import 'package:recents_content/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:recents_content/features/auth/presentation/widgets/message_background.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -88,10 +89,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
             const SizedBox(height: 40),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 100),
-              child: ElevatedButton(
-                  onPressed: _isLoading ? null : () async{
+            AuthFormField(
+              isLoading: _isLoading,
+              text: 'Sign Up',
+              onPressed: () async{
                     if(_formKey.currentState!.validate()) {
                       setState(() {
                         _isLoading = true;
@@ -138,33 +139,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-
-                    padding: const EdgeInsets.all(12),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(26))
-                    )
-                  ),
-                  child: _isLoading ?
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.green,
-                          strokeWidth: 2,
-                        ),
-                      )
-                  : const Text(
-                    'Sign up ',
-                    style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w400
-                    ),
-                  )
-              )
-            ),
+              ),
           ],
         )
         )

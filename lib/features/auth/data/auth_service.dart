@@ -51,6 +51,10 @@ class AuthService {
         return 'Weak password';
       }
 
+      if(error.code == "invalid-email"){
+        return "Invalid email";
+      }
+
       return error.message ?? 'Registration error';
     }catch(_){
       return 'Something went wrong';

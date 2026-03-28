@@ -17,6 +17,16 @@ class Validators{
     if(value.length < 8 || value.length > 16){
       return 'Password lenght must be 8-16';
     }
+
+    final hasLatter = value.contains(RegExp(r'[A-Za-z]'));
+    if(!hasLatter){
+      return 'Password must contain at least one letter';
+    }
+
+    final hasDigit = value.contains(RegExp(r'[0-9]'));
+    if(!hasDigit){
+      return 'Password must contain at least one number';
+    }
     return null;
   }
 }
